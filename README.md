@@ -1,6 +1,10 @@
 # Vibe Coding 项目实战
 
-> 面向高中信息科技课堂的 **AI 辅助编程（Vibe Coding）实战课程**。学生通过自然语言与 AI 对话，从零完成 3 个递进式实战项目，理解"提出需求 → 生成代码 → 验证迭代"的现代开发范式。
+![K12](https://img.shields.io/badge/%E5%AE%9A%E4%BD%8D-%E9%AB%98%E4%B8%AD%E4%BF%A1%E6%81%AF%E7%A7%91%E6%8A%80%E8%AF%BE%E5%A0%82-blue) ![课标](https://img.shields.io/badge/%E5%AF%B9%E6%A0%87-%E5%BF%85%E4%BF%AE1%E3%80%8A%E6%95%B0%E6%8D%AE%E4%B8%8E%E8%AE%A1%E7%AE%97%E3%80%8B-green) ![许可证](https://img.shields.io/badge/License-MIT-yellow)
+
+> 🏫 **国内首个面向高中信息科技课堂的 AI 辅助编程（Vibe Coding）实战课程**——对齐《普通高中信息科技课程标准》必修1《数据与计算》。学生通过自然语言与 AI 对话，从零完成 3 个递进式实战项目，理解"提出需求 → 生成代码 → 验证迭代"的现代开发范式。
+>
+> ✨ **差异化定位**：现有 Vibe Coding 教程（如 datawhalechina/vibe-vibe）均面向成人开发者，本课程专为 K12 课堂设计——含课标对照、三维过程性评价、分层任务卡与课堂实施预案，零开发环境依赖，浏览器即可上课。
 
 ## 课程定位
 
@@ -54,6 +58,11 @@ vibe-coding-practice/
 - 课时安排：3 课时（每项目 1 课时），也可拆为 6 个 45 分钟小节
 - 评价方式：以"需求描述质量 + 验证迭代次数 + 最终作品"三维评价
 - 参见 `docs/03-课堂实施建议.md`
+
+## 相关资源
+
+- [datawhalechina/vibe-vibe](https://github.com/datawhalechina/vibe-vibe) — Datawhale 系统性 Vibe Coding 教程（面向成人开发者，可作为教师备课参考）
+- [FidStyle/Vibe-Coding-Practical-Handbook](https://github.com/FidStyle/Vibe-Coding-Practical-Handbook) — 从入门到项目实战手册
 
 ## License
 
