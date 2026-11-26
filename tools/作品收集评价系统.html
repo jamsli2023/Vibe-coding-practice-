@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vibe Coding 作品收集与评价系统</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: "Microsoft YaHei", sans-serif; background: #0f172a; color: #e2e8f0; margin: 0; padding: 24px 16px; }
+  .wrap { max-width: 960px; margin: 0 auto; }
+  header { text-align: center; margin-bottom: 24px; }
+  h1 { font-size: 26px; margin: 0 0 6px; }
+  .sub { color: #94a3b8; font-size: 14px; }
+  .tabs { display: flex; gap: 8px; justify-content: center; margin-bottom: 20px; }
+  .tab { padding: 10px 22px; border-radius: 10px; border: 1px solid #334155; background: #1e293b;
+         color: #94a3b8; cursor: pointer; font-size: 15px; }
+  .tab.active { background: #2563eb; color: #fff; border-color: #2563eb; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+  .card { background: #1e293b; border: 1px solid #334155; border-radius: 14px; padding: 20px; margin-bottom: 16px; }
+  label { display: block; font-size: 13px; color: #93c5fd; margin: 12px 0 6px; }
+  input[type=text], select, textarea { width: 100%; padding: 10px; font-size: 14px; border-radius: 8px;
+      border: 1px solid #475569; background: #0f172a; color: #f1f5f9; font-family: inherit; }
+  textarea { resize: vertical; min-height: 64px; }
+  button { padding: 10px 22px; font-size: 15px; border: none; border-radius: 8px; cursor: pointer;
+           background: #38bdf8; color: #0f172a; margin-right: 8px; margin-top: 12px; }
+  button.ghost { background: #334155; color: #cbd5e1; }
+  button.danger { background: #7f1d1d; color: #fecaca; }
+  .msg { margin-top: 10px; font-size: 14px; min-height: 18px; }
+  .ok { color: #4ade80; } .err { color: #f87171; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 10px; }
+  th, td { padding: 8px; border-bottom: 1px solid #334155; text-align: left; }
+  th { color: #93c5fd; font-weight: normal; }
+  .score { font-weight: bold; color: #fbbf24; }
+  .gradeA { color: #4ade80; } .gradeB { color: #fbbf24; } .gradeC { color: #f87171; }
+  .rate { display: flex; align-items: center; gap: 10px; margin: 8px 0; }
+  .rate .lb { width: 200px; font-size: 13px; color: #cbd5e1; }
+  .rate input[type=range] { flex: 1; accent-color: #38bdf8; }
+  .rate .val { width: 46px; text-align: right; color: #fbbf24; font-weight: bold; }
+  .total { font-size: 20px; margin: 10px 0; } .total b { color: #4ade80; font-size: 26px; }
+  .stat { display: flex; gap: 12px; flex-wrap: wrap; }
+  .stat .s { flex: 1; min-width: 140px; background: #0f172a; border: 1px solid #334155;
+             border-radius: 10px; padding: 14px; text-align: center; }
+  .stat .n { font-size: 24px; font-weight: bold; color: #38bdf8; }
+  .stat .t { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+  .btnrow { display: flex; flex-wrap: wrap; }
+  details summary { cursor: pointer; color: #7dd3fc; font-size: 13px; }
+  pre { background: #0f172a; padding: 10px; border-radius: 8px; font-size: 12px;
+        white-space: pre-wrap; word-break: break-all; color: #a5b4fc; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>📦 Vibe Coding 作品收集与评价系统</h1>
+    <div class="sub">三维评价：需求描述质量 30 · 验证迭代 30 · 最终作品 40 —— 数据保存在本机浏览器</div>
+  </header>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('student', this)">🎓 学生提交</div>
+    <div class="tab" onclick="switchTab('review', this)">📝 作品评价</div>
+    <div class="tab" onclick="switchTab('dash', this)">📊 成绩总览</div>
+    <div class="tab" onclick="switchTab('data', this)">💾 数据管理</div>
+  </div>
+
+  <!-- 学生提交 -->
+  <div class="panel active" id="student">
+    <div class="card">
+      <label>姓名 *</label>
+      <input type="text" id="sName" placeholder="你的姓名">
+      <label>班级 *</label>
+      <input type="text" id="sClass" placeholder="如：高二(3)班">
+      <label>提交项目 *</label>
+      <select id="sProject">
+        <option value="01-猜数字游戏">01 猜数字游戏</option>
+        <option value="02-二进制转换器">02 二进制转换器</option>
+        <option value="03-班级数据看板">03 班级数据看板</option>
+      </select>
+      <label>作品链接（GitHub Pages / 网盘链接，选填）</label>
+      <input type="text" id="sLink" placeholder="https://...">
+      <label>Prompt 使用记录（你向 AI 提了几轮问题？关键提问是什么？）*</label>
+      <textarea id="sPrompts" placeholder="第1轮：...；第2轮：修改了..."></textarea>
+      <label>验证迭代记录（遇到什么问题？怎么解决？）*</label>
+      <textarea id="sDebug" placeholder="例如：控制台报错 Cannot read ...，我让 AI 修复了 ..."></textarea>
+      <label>自评：你给自己的作品打几分（1~10）？为什么？</label>
+      <textarea id="sSelf" placeholder="7 分，因为..."></textarea>
+      <button onclick="submitWork()">✅ 提交作品</button>
+      <div class="msg" id="sMsg"></div>
+    </div>
+  </div>
+
+  <!-- 作品评价（教师） -->
+  <div class="panel" id="review">
+    <div class="card" id="loginCard">
+      <label>教师密码（默认 teacher，可在数据管理中修改）</label>
+      <input type="text" id="tPass" placeholder="输入教师密码进入评价模式">
+      <button onclick="teacherLogin()">进入评价模式</button>
+      <div class="msg" id="tMsg"></div>
+    </div>
+    <div class="card" id="reviewCard" style="display:none">
+      <label>选择待评作品</label>
+      <select id="rSelect" onchange="loadReview()"></select>
+      <div id="rInfo" style="margin-top:12px"></div>
+      <div class="rate"><span class="lb">需求描述质量（≤30）Prompt四要素、迭代式提问</span>
+        <input type="range" id="r1" min="0" max="30" value="24" oninput="calcTotal()"><span class="val" id="v1">24</span></div>
+      <div class="rate"><span class="lb">验证迭代（≤30）主动验证、报修信息完整</span>
+        <input type="range" id="r2" min="0" max="30" value="24" oninput="calcTotal()"><span class="val" id="v2">24</span></div>
+      <div class="rate"><span class="lb">最终作品（≤40）功能达成 + 代码讲解</span>
+        <input type="range" id="r3" min="0" max="40" value="32" oninput="calcTotal()"><span class="val" id="v3">32</span></div>
+      <div class="total">总分：<b id="rTotal">80</b> / 100 &nbsp; <span id="rGrade"></span></div>
+      <label>教师评语</label>
+      <textarea id="rComment" placeholder="亮点 + 改进建议..."></textarea>
+      <button onclick="saveReview()">💾 保存评价</button>
+      <div class="msg" id="rMsg"></div>
+    </div>
+  </div>
+
+  <!-- 成绩总览 -->
+  <div class="panel" id="dash">
+    <div class="card">
+      <div class="stat">
+        <div class="s"><div class="n" id="dCount">0</div><div class="t">提交作品数</div></div>
+        <div class="s"><div class="n" id="dGraded">0</div><div class="t">已评价数</div></div>
+        <div class="s"><div class="n" id="dAvg">-</div><div class="t">班级平均分</div></div>
+        <div class="s"><div class="n" id="dTop">-</div><div class="t">最高分</div></div>
+      </div>
+      <table id="dTable">
+        <thead><tr><th>姓名</th><th>班级</th><th>项目</th><th>Prompt轮数</th><th>需求(30)</th><th>迭代(30)</th><th>作品(40)</th><th>总分</th><th>等级</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <div class="btnrow"><button class="ghost" onclick="renderDash()">🔄 刷新</button></div>
+    </div>
+  </div>
+
+  <!-- 数据管理 -->
+  <div class="panel" id="data">
+    <div class="card">
+      <label>📥 导出全部数据（JSON，可交给教师汇总）</label>
+      <div class="btnrow">
+        <button onclick="exportData()">导出 JSON</button>
+        <button class="ghost" onclick="exportCSV()">导出 CSV（成绩表）</button>
+      </div>
+      <label>📤 导入数据（教师：合并学生提交文件，同名提交按时间更新）</label>
+      <input type="file" id="importFile" accept=".json" style="color:#94a3b8">
+      <div class="btnrow"><button class="ghost" onclick="importData()">导入合并</button></div>
+      <label>🔑 修改教师密码</label>
+      <input type="text" id="newPass" placeholder="新密码">
+      <div class="btnrow">
+        <button class="ghost" onclick="changePass()">保存密码</button>
+        <button class="danger" onclick="clearAll()">🗑 清空全部数据</button>
+      </div>
+      <div class="msg" id="dMsg"></div>
+      <details><summary>查看原始数据</summary><pre id="rawData"></pre></details>
+    </div>
+  </div>
+</div>
+
+<script>
+  const KEY = 'vibeWorks_v1', PASS_KEY = 'vibeTeacherPass_v1';
+  const load = () => JSON.parse(localStorage.getItem(KEY) || '[]');
+  const save = d => localStorage.setItem(KEY, JSON.stringify(d));
+  const now = () => new Date().toLocaleString('zh-CN');
+  const msg = (id, text, cls) => { const el = document.getElementById(id); el.textContent = text; el.className = 'msg ' + (cls || ''); };
+
+  // ---------- 标签切换 ----------
+  function switchTab(name, el) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById(name).classList.add('active');
+    if (name === 'dash') renderDash();
+    if (name === 'data') document.getElementById('rawData').textContent = JSON.stringify(load(), null, 2);
+  }
+
+  // ---------- 学生提交 ----------
+  function submitWork() {
+    const name = document.getElementById('sName').value.trim();
+    const cls = document.getElementById('sClass').value.trim();
+    const prompts = document.getElementById('sPrompts').value.trim();
+    const debug = document.getElementById('sDebug').value.trim();
+    if (!name || !cls || !prompts || !debug) return msg('sMsg', '❌ 姓名、班级、Prompt 记录和迭代记录为必填项', 'err');
+    const rounds = (prompts.match(/第\s*\d+\s*轮/g) || []).length || 1;
+    const data = load();
+    const idx = data.findIndex(w => w.name === name && w.cls === cls && w.project === document.getElementById('sProject').value);
+    const work = {
+      id: Date.now(), name, cls,
+      project: document.getElementById('sProject').value,
+      link: document.getElementById('sLink').value.trim(),
+      prompts, rounds, debug, self: document.getElementById('sSelf').value.trim(),
+      time: now(), review: null
+    };
+    if (idx >= 0) work.id = data[idx].id; // 更新已提交作品
+    if (idx >= 0) data[idx] = work; else data.push(work);
+    save(data);
+    msg('sMsg', '🎉 提交成功！' + (idx >= 0 ? '（已更新你之前提交的同项目作品）' : '等待教师评价'), 'ok');
+    ['sPrompts', 'sDebug', 'sSelf'].forEach(i => document.getElementById(i).value = '');
+  }
+
+  // ---------- 教师评价 ----------
+  function teacherLogin() {
+    const pass = document.getElementById('tPass').value;
+    const stored = localStorage.getItem(PASS_KEY) || 'teacher';
+    if (pass !== stored) return msg('tMsg', '❌ 密码错误', 'err');
+    document.getElementById('loginCard').style.display = 'none';
+    document.getElementById('reviewCard').style.display = 'block';
+    refreshSelect(); msg('tMsg', '', '');
+  }
+  function refreshSelect() {
+    const sel = document.getElementById('rSelect');
+    sel.innerHTML = load().map(w =>
+      `<option value="${w.id}">${w.name}｜${w.cls}｜${w.project}${w.review ? '（已评 ' + total(w.review) + '）' : '（待评）'}</option>`).join('') || '<option value="">暂无提交</option>';
+    if (load().length) loadReview();
+  }
+  function loadReview() {
+    const id = Number(document.getElementById('rSelect').value);
+    const w = load().find(x => x.id === id);
+    if (!w) return;
+    document.getElementById('rInfo').innerHTML =
+      `<details><summary>📋 查看 ${w.name} 的提交详情（Prompt ${w.rounds} 轮）</summary>
+       <p><b>Prompt 记录：</b></p><pre>${esc(w.prompts)}</pre>
+       <p><b>迭代记录：</b></p><pre>${esc(w.debug)}</pre>
+       <p><b>自评：</b>${esc(w.self || '未填写')} ${w.link ? '｜<a href="' + esc(w.link) + '" target="_blank" style="color:#38bdf8">作品链接</a>' : ''}</p></details>`;
+    if (w.review) {
+      ['r1', 'r2', 'r3'].forEach((k, i) => document.getElementById(k).value = w.review.s[i]);
+      document.getElementById('rComment').value = w.review.comment;
+    } else { ['r1', 'r2', 'r3'].forEach(k => document.getElementById(k).value = 0); document.getElementById('rComment').value = ''; }
+    calcTotal();
+  }
+  function calcTotal() {
+    ['r1', 'r2', 'r3'].forEach((k, i) => document.getElementById('v' + (i + 1)).textContent = document.getElementById(k).value);
+    const t = total([+document.getElementById('r1').value, +document.getElementById('r2').value, +document.getElementById('r3').value]);
+    document.getElementById('rTotal').textContent = t;
+    document.getElementById('rGrade').innerHTML = grade(t);
+  }
+  function saveReview() {
+    const id = Number(document.getElementById('rSelect').value);
+    const data = load(); const w = data.find(x => x.id === id);
+    if (!w) return msg('rMsg', '❌ 未找到作品', 'err');
+    w.review = { s: [+document.getElementById('r1').value, +document.getElementById('r2').value, +document.getElementById('r3').value],
+                 comment: document.getElementById('rComment').value.trim(), time: now() };
+    save(data); refreshSelect();
+    msg('rMsg', '✅ 评价已保存', 'ok');
+  }
+  const total = r => r.s ? r.s[0] + r.s[1] + r.s[2] : r[0] + r[1] + r[2];
+  const grade = t => t >= 85 ? '<span class="gradeA">A 优秀</span>' : t >= 70 ? '<span class="gradeB">B 良好</span>' : t >= 60 ? '<span class="gradeB">C 合格</span>' : '<span class="gradeC">D 待改进</span>';
+  const esc = s => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  // ---------- 成绩总览 ----------
+  function renderDash() {
+    const data = load();
+    const graded = data.filter(w => w.review);
+    document.getElementById('dCount').textContent = data.length;
+    document.getElementById('dGraded').textContent = graded.length;
+    document.getElementById('dAvg').textContent = graded.length ? (graded.reduce((a, w) => a + total(w.review), 0) / graded.length).toFixed(1) : '-';
+    document.getElementById('dTop').textContent = graded.length ? Math.max(...graded.map(w => total(w.review))) : '-';
+    document.querySelector('#dTable tbody').innerHTML = data.map(w => {
+      if (!w.review) return `<tr><td>${esc(w.name)}</td><td>${esc(w.cls)}</td><td>${esc(w.project)}</td><td>${w.rounds}</td><td colspan="4" style="color:#64748b">待评价</td></tr>`;
+      const t = total(w.review);
+      return `<tr><td>${esc(w.name)}</td><td>${esc(w.cls)}</td><td>${esc(w.project)}</td><td>${w.rounds}</td>
+        <td>${w.review.s[0]}</td><td>${w.review.s[1]}</td><td>${w.review.s[2]}</td>
+        <td class="score">${t}</td><td>${grade(t)}</td></tr>`;
+    }).join('') || '<tr><td colspan="9" style="color:#64748b">暂无提交</td></tr>';
+  }
+
+  // ---------- 数据管理 ----------
+  function exportData() {
+    download('vibe-works-' + Date.now() + '.json', JSON.stringify(load(), null, 2), 'application/json');
+    msg('dMsg', '✅ 已导出 JSON', 'ok');
+  }
+  function exportCSV() {
+    const rows = [['姓名','班级','项目','Prompt轮数','需求(30)','迭代(30)','作品(40)','总分','等级','评语','提交时间']];
+    load().forEach(w => rows.push([w.name, w.cls, w.project, w.rounds,
+      w.review ? w.review.s[0] : '', w.review ? w.review.s[1] : '', w.review ? w.review.s[2] : '',
+      w.review ? total(w.review) : '', w.review ? total(w.review) >= 85 ? 'A' : total(w.review) >= 70 ? 'B' : total(w.review) >= 60 ? 'C' : 'D' : '待评',
+      w.review ? w.review.comment : '', w.time]));
+    download('vibe-成绩表.csv', '\uFEFF' + rows.map(r => r.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(',')).join('\n'), 'text/csv');
+    msg('dMsg', '✅ 已导出 CSV（Excel 可直接打开）', 'ok');
+  }
+  function importData() {
+    const f = document.getElementById('importFile').files[0];
+    if (!f) return msg('dMsg', '❌ 请先选择 JSON 文件', 'err');
+    const rd = new FileReader();
+    rd.onload = () => {
+      try {
+        const incoming = JSON.parse(rd.result);
+        if (!Array.isArray(incoming)) throw 0;
+        const data = load();
+        let merged = 0, added = 0;
+        incoming.forEach(w => {
+          const idx = data.findIndex(x => x.name === w.name && x.cls === w.cls && x.project === w.project);
+          if (idx >= 0) { data[idx] = w; merged++; } else { data.push(w); added++; }
+        });
+        save(data);
+        msg('dMsg', `✅ 导入完成：新增 ${added} 条，合并更新 ${merged} 条`, 'ok');
+        document.getElementById('rawData').textContent = JSON.stringify(load(), null, 2);
+      } catch { msg('dMsg', '❌ 文件格式错误', 'err'); }
+    };
+    rd.readAsText(f);
+  }
+  function changePass() {
+    const p = document.getElementById('newPass').value.trim();
+    if (!p) return msg('dMsg', '❌ 新密码不能为空', 'err');
+    localStorage.setItem(PASS_KEY, p); msg('dMsg', '✅ 密码已修改', 'ok');
+  }
+  function clearAll() {
+    if (!confirm('确定清空全部提交与评价数据？此操作不可恢复！')) return;
+    save([]); msg('dMsg', '🗑 已清空', 'ok'); renderDash();
+    document.getElementById('rawData').textContent = '[]';
+  }
+  function download(name, content, type) {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([content], { type }));
+    a.download = name; a.click(); URL.revokeObjectURL(a.href);
+  }
+</script>
+</body>
+</html>
