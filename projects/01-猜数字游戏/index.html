@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>猜数字游戏</title>
+<style>
+  body { font-family: "Microsoft YaHei", sans-serif; background: #1e293b; color: #f1f5f9;
+         display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+  .card { background: #334155; padding: 40px; border-radius: 16px; width: 340px; text-align: center;
+          box-shadow: 0 10px 30px rgba(0,0,0,.4); }
+  h1 { font-size: 24px; margin-top: 0; }
+  #hint { min-height: 28px; font-size: 18px; margin: 16px 0; }
+  input { width: 120px; padding: 10px; font-size: 18px; border-radius: 8px; border: 1px solid #64748b;
+          text-align: center; }
+  button { padding: 10px 24px; font-size: 16px; margin-left: 8px; border: none; border-radius: 8px;
+           background: #38bdf8; color: #0f172a; cursor: pointer; }
+  button:hover { background: #7dd3fc; }
+  #count { color: #94a3b8; font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>🎯 猜数字游戏</h1>
+  <p>我已经想好一个 <b>1~100</b> 之间的整数，猜猜看！</p>
+  <input id="guess" type="number" min="1" max="100" placeholder="输入数字">
+  <button id="btn" onclick="makeGuess()">猜！</button>
+  <p id="hint"></p>
+  <p id="count"></p>
+  <button id="reset" onclick="resetGame()" style="display:none">再来一局</button>
+</div>
+<script>
+  // 核心逻辑 1：生成 1~100 的随机整数
+  let answer = Math.floor(Math.random() * 100) + 1;
+  let times = 0;
+
+  // 核心逻辑 2：判断大了 / 小了 / 猜对
+  function makeGuess() {
+    const input = document.getElementById('guess');
+    const value = Number(input.value);
+    if (!value || value < 1 || value > 100) {
+      document.getElementById('hint').textContent = '请输入 1~100 之间的整数！';
+      return;
+    }
+    times++;
+    const hint = document.getElementById('hint');
+    if (value > answer)      hint.textContent = '📉 大了，再小一点';
+    else if (value < answer) hint.textContent = '📈 小了，再大一点';
+    else {
+      hint.textContent = '🎉 猜对了！答案就是 ' + answer;
+      document.getElementById('btn').style.display = 'none';
+      document.getElementById('reset').style.display = 'inline-block';
+    }
+    document.getElementById('count').textContent = '已猜 ' + times + ' 次';
+    input.value = '';
+    input.focus();
+  }
+
+  function resetGame() {
+    answer = Math.floor(Math.random() * 100) + 1;
+    times = 0;
+    document.getElementById('hint').textContent = '';
+    document.getElementById('count').textContent = '';
+    document.getElementById('btn').style.display = 'inline-block';
+    document.getElementById('reset').style.display = 'none';
+  }
+
+  // 回车键也能提交
+  document.getElementById('guess').addEventListener('keydown', e => {
+    if (e.key === 'Enter') makeGuess();
+  });
+</script>
+</body>
+</html>

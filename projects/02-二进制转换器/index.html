@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>二进制转换器</title>
+<style>
+  body { font-family: "Microsoft YaHei", sans-serif; background: #0f172a; color: #e2e8f0;
+         display: flex; justify-content: center; padding: 40px 16px; margin: 0; }
+  .wrap { width: 420px; }
+  h1 { text-align: center; font-size: 26px; }
+  .box { background: #1e293b; border-radius: 14px; padding: 24px; margin-bottom: 20px;
+         border: 1px solid #334155; }
+  h2 { font-size: 17px; margin: 0 0 12px; color: #7dd3fc; }
+  input { width: 60%; padding: 10px; font-size: 16px; border-radius: 8px; border: 1px solid #475569;
+          background: #0f172a; color: #f8fafc; }
+  button { padding: 10px 22px; margin-left: 8px; border: none; border-radius: 8px;
+           background: #22c55e; color: #052e16; font-size: 15px; cursor: pointer; }
+  .result { margin-top: 14px; font-size: 20px; font-family: Consolas, monospace; color: #fbbf24;
+            letter-spacing: 2px; min-height: 26px; }
+  .err { color: #f87171; font-size: 14px; }
+  .weights { display: flex; gap: 6px; margin-top: 8px; font-size: 12px; color: #64748b;
+             justify-content: center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>⚡ 二进制 ⇄ 十进制转换器</h1>
+
+  <div class="box">
+    <h2>十进制 → 二进制（0~255）</h2>
+    <input id="decIn" type="text" placeholder="例如 100">
+    <button onclick="toBin()">转换</button>
+    <div class="result" id="binOut"></div>
+    <div class="weights">128 · 64 · 32 · 16 · 8 · 4 · 2 · 1</div>
+  </div>
+
+  <div class="box">
+    <h2>二进制 → 十进制（8 位，只含 0 和 1）</h2>
+    <input id="binIn" type="text" placeholder="例如 01100100">
+    <button onclick="toDec()">转换</button>
+    <div class="result" id="decOut"></div>
+  </div>
+</div>
+<script>
+  // 十进制转二进制：toString(2) 转 2 进制，padStart 补足 8 位
+  function toBin() {
+    const raw = document.getElementById('decIn').value.trim();
+    const out = document.getElementById('binOut');
+    const n = Number(raw);
+    if (!/^\d+$/.test(raw) || n < 0 || n > 255) {
+      out.className = 'result err';
+      out.textContent = '请输入 0~255 之间的整数！';
+      return;
+    }
+    out.className = 'result';
+    out.textContent = n.toString(2).padStart(8, '0');
+  }
+
+  // 二进制转十进制：正则校验 8 位 0/1，再按 2 进制解析
+  function toDec() {
+    const raw = document.getElementById('binIn').value.trim();
+    const out = document.getElementById('decOut');
+    if (!/^[01]{8}$/.test(raw)) {
+      out.className = 'result err';
+      out.textContent = '请输入恰好 8 位、只含 0 和 1 的二进制！';
+      return;
+    }
+    out.className = 'result';
+    out.textContent = parseInt(raw, 2);
+  }
+
+  document.getElementById('decIn').addEventListener('keydown', e => { if (e.key === 'Enter') toBin(); });
+  document.getElementById('binIn').addEventListener('keydown', e => { if (e.key === 'Enter') toDec(); });
+</script>
+</body>
+</html>
